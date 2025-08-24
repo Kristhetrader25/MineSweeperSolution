@@ -6,12 +6,18 @@ using System.Threading.Tasks;
 
 namespace MineSweeperClasses
 {
-    
+    /// <summary>
+    /// Represents a single cell (square) on the Minesweeper board.
+    /// A Cell can contain a bomb, track the number of bomb neighbors,
+    /// hold a reward, and store its current player-visible state
+    /// (revealed, hidden, or flagged).
+    /// </summary>
     public class Cell
     {
         
         public bool Live { get; set; }
 
+        
         public int LiveNeighbors { get; set; }
 
         
@@ -23,7 +29,9 @@ namespace MineSweeperClasses
         
         public bool IsFlagged { get; private set; }
 
-        
+        /// <summary>
+        /// Default constructor. Creates a hidden, safe cell with no reward and no flags.
+        /// </summary>
         public Cell()
         {
             Live = false;
@@ -33,11 +41,16 @@ namespace MineSweeperClasses
             IsFlagged = false;
         }
 
-        
+        /// <summary>
+        /// Reveals the cell. Returns false if the cell contains a bomb, true if it is safe.
+        /// If the cell is already revealed, calling again returns the same outcome.
+        /// </summary>
+        /// <returns>True if safe, false if bomb.</returns>
         public bool Reveal()
         {
             if (IsRevealed)
             {
+                // Already revealed: just return its status
                 return !Live;
             }
             else
@@ -47,8 +60,11 @@ namespace MineSweeperClasses
             }
         }
 
-
-        
+        /// <summary>
+        /// Undoes a reveal by hiding the cell again.
+        /// Used when the player spends a reward (mulligan).
+        /// </summary>
+        /// <returns>True if undo succeeded; false if cell was not revealed.</returns>
         public bool UndoReveal()
         {
             if (IsRevealed)
@@ -59,8 +75,9 @@ namespace MineSweeperClasses
             return false;
         }
 
-
-        
+        /// <summary>
+        /// Toggles the flagged state (suspected bomb) if the cell is not revealed.
+        /// </summary>
         public void ToggleFlag()
         {
             if (!IsRevealed)
@@ -69,7 +86,11 @@ namespace MineSweeperClasses
             }
         }
 
-        
+        /// <summary>
+        /// Collects the reward if the cell is revealed and has one.
+        /// Consumes the reward and returns true if successful.
+        /// </summary>
+        /// <returns>True if reward was collected; false otherwise.</returns>
         public bool CollectReward()
         {
             if (IsRevealed && HasReward)
@@ -80,14 +101,23 @@ namespace MineSweeperClasses
             return false;
         }
 
-        
+        /// <summary>
+        /// Gets the "answer key" character for this cell:
+        /// 'B' if bomb, '.' if no neighbors, or digit ('1'..'8') for neighbor counts.
+        /// </summary>
+        /// <returns>Character representing the true content of this cell.</returns>
         public char GetAnswerChar()
         {
             if (Live) return 'B';
             return LiveNeighbors == 0 ? '.' : (char)('0' + Math.Min(LiveNeighbors, 9));
         }
 
-        
+        /// <summary>
+        /// Gets the "visible" character for the player’s view:
+        /// '.' for unrevealed, 'F' if flagged, 'B' if revealed bomb,
+        /// digit ('1'..'8') if revealed with neighbors, or blank if zero neighbors.
+        /// </summary>
+        /// <returns>Character representing what the player currently sees.</returns>
         public char GetVisibleChar()
         {
             if (!IsRevealed) return IsFlagged ? 'F' : '.';
@@ -95,6 +125,9 @@ namespace MineSweeperClasses
             return LiveNeighbors == 0 ? ' ' : (char)('0' + Math.Min(LiveNeighbors, 9));
         }
 
+        /// <summary>
+        /// Returns the string form of the cell, which matches its visible character.
+        /// </summary>
         public override string ToString() => GetVisibleChar().ToString();
     }
 }
