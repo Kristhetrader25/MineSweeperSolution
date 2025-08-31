@@ -104,11 +104,13 @@ namespace MineSweeperClasses
         /// <summary>
         /// Gets the "answer key" character for this cell:
         /// 'B' if bomb, '.' if no neighbors, or digit ('1'..'8') for neighbor counts.
+        /// 'R' if reward. 
         /// </summary>
         /// <returns>Character representing the true content of this cell.</returns>
         public char GetAnswerChar()
         {
             if (Live) return 'B';
+            if (HasReward) return 'R';
             return LiveNeighbors == 0 ? '.' : (char)('0' + Math.Min(LiveNeighbors, 9));
         }
 

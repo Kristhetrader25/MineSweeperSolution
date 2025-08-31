@@ -143,6 +143,24 @@ namespace MineSweeperConsole
                 Console.Write('B');
                 Console.ForegroundColor = prev; // restore
             }
+            else if (ch == 'R')
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGreen; 
+                Console.Write('R');
+                Console.ForegroundColor = prev;
+            }
+            else if (ch == 'F')
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write('F');
+                Console.ForegroundColor = prev;
+            }
+            else if (ch == '?')
+            {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write('?');
+                Console.ForegroundColor = prev;
+            }
             else
             {
                 // '.' or other neutral characters
@@ -152,5 +170,39 @@ namespace MineSweeperConsole
             // Trailing space (completes the 3-char cell design)
             Console.Write(" ");
         }
+
+        public static void PrintBoard(Board board)
+        {
+            int n = board.Size;
+
+            PrintColumnHeaders(n);
+            PrintBorder(n);
+
+            for (int r = 0; r < n; r++)
+            {
+                Console.Write($"{r,2} ");
+                Console.Write("|");
+                for (int c = 0; c < n; c++)
+                {
+                    var cell = board.Cells[r, c];
+
+                    // Player-view glyph:
+                    // '?' = hidden, 'F' = flagged, 'B' = revealed bomb, ' ' or '1'..'8' = revealed safe
+                    char ch;
+                    if (!cell.IsRevealed)
+                        ch = cell.IsFlagged ? 'F' : '?';
+                    else if (cell.Live)
+                        ch = 'B';
+                    else
+                        ch = cell.LiveNeighbors == 0 ? ' ' : (char)('0' + Math.Min(cell.LiveNeighbors, 9));
+
+                    WriteCell(ch);   // reuse color-aware cell writer
+                    Console.Write("|");
+                }
+                Console.WriteLine();
+                PrintBorder(n);
+            }
+        }
+
     }
 }
