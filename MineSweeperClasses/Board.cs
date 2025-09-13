@@ -299,9 +299,10 @@ namespace MineSweeperClasses
                         anyUnresolved = true;
                 }
             }
+        }
 
        
-        /// <summary>
+        /*/// <summary>
         /// Returns the current game status.
         /// Currently always returns <see cref="GameStatus.InProgress"/>.
         /// Future versions will detect win/loss conditions.
@@ -309,6 +310,6 @@ namespace MineSweeperClasses
         public GameStatus DetermineGameState()
         {
             return GameStatus.InProgress;
-        }
+        }*/
     }
 }
