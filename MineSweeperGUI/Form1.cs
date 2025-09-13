@@ -37,7 +37,7 @@ namespace MineSweeperGUI
         Board board;
 
         /// <summary>2D array of buttons mirrored to <see cref="Board.Cells"/>.</summary>
-        Button[,] buttons;
+        private Button[,] buttons = null;
 
         /// <summary>Minimum cell size in pixels to keep the UI usable when the panel is small.</summary>
         private const int MinCell = 18;
@@ -281,11 +281,15 @@ namespace MineSweeperGUI
             var (r, c) = ((int, int))btn.Tag;
             var cell = board.Cells[r, c];
 
-            if (cell.IsRevealed) return;
-
+            if (cell.IsRevealed) return;  
             cell.ToggleFlag();
+
             UpdateCellButton(r, c);
+
+            // Check for a win that occurs by correct flagging
+            CheckGameState();
         }
+
 
         // --- Rendering helpers --------------------------------------------------
 

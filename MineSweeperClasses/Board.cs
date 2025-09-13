@@ -104,6 +104,40 @@ namespace MineSweeperClasses
             return 0;
         }
 
+        public void FloodFill(int row, int col)
+        {
+            if (!IsCellOnBoard(row, col)) return;
+
+            var cell = Cells[row, col];
+
+            // Do not process bombs or already revealed/flagged cells
+            if (cell.Live || cell.IsRevealed || cell.IsFlagged) return;
+
+            // Reveal this safe cell
+            bool safe = cell.Reveal(); // true because we checked Live above
+            if (!safe) return;
+
+            // Collect reward if present
+            if (cell.CollectReward())
+            {
+                RewardsRemaining++;
+                // Console message is fine for console version; GUI ignores it
+                Console.WriteLine($"A reward was collected! Rewards now: {RewardsRemaining}");
+            }
+
+            // If numbered, we stop (boundary)
+            if (cell.LiveNeighbors > 0) return;
+
+            // Otherwise recurse into neighbors
+            for (int dr = -1; dr <= 1; dr++)
+            {
+                for (int dc = -1; dc <= 1; dc++)
+                {
+                    if (dr == 0 && dc == 0) continue;
+                    FloodFill(row + dr, col + dc);
+                }
+            }
+        }
 
         /// <summary>
         /// Helper function to determine if a cell is out of bounds
@@ -284,24 +318,23 @@ namespace MineSweeperClasses
                 {
                     var cell = Cells[r, c];
 
-                    // If a bomb was revealed, game is lost
+                    // If a bomb was revealed, lost
                     if (cell.Live && cell.IsRevealed)
                         return GameStatus.Lost;
 
-                    // Track if there is still work to do:
-                    // - bombs must be correctly flagged
-                    // - safe cells must be revealed
+                    // Resolved if: bombs are flagged OR safe cells are revealed
                     bool resolved =
                         (cell.Live && cell.IsFlagged) ||
                         (!cell.Live && cell.IsRevealed);
 
-                    if (!resolved)
-                        anyUnresolved = true;
+                    if (!resolved) anyUnresolved = true;
                 }
             }
+
+            return anyUnresolved ? GameStatus.InProgress : GameStatus.Won;
         }
 
-       
+
         /*/// <summary>
         /// Returns the current game status.
         /// Currently always returns <see cref="GameStatus.InProgress"/>.
