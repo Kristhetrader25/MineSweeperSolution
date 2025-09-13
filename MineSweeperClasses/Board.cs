@@ -226,7 +226,6 @@ namespace MineSweeperClasses
                     Cells[r, c].HasReward = false; 
                     if (!Cells[r, c].Live)
                         safeCells.Add((r, c));
-<<<<<<< HEAD
                 }
             }
 
@@ -301,151 +300,15 @@ namespace MineSweeperClasses
                 }
             }
 
-            return anyUnresolved ? GameStatus.InProgress : GameStatus.Won;
-        }
-
+       
         /// <summary>
-        /// Recursively reveals a connected area of safe cells:
-        /// - Reveals the starting cell if safe.
-        /// - If the cell has 0 live neighbors, recursively reveals all neighbors,
-        ///   stopping at numbered boundary cells (which are revealed but not recursed).
-        /// - Never reveals bombs or flagged cells.
-        /// - Collects any rewards revealed during the fill (increments RewardsRemaining).
+        /// Returns the current game status.
+        /// Currently always returns <see cref="GameStatus.InProgress"/>.
+        /// Future versions will detect win/loss conditions.
         /// </summary>
-        public void FloodFill(int row, int col)
-        {
-            if (!IsCellOnBoard(row, col))
-            {
-                return;
-            }
-
-            var cell = Cells[row, col];
-
-            // Do not process bombs or already-revealed/flagged cells
-            if (cell.Live || cell.IsRevealed || cell.IsFlagged)
-            {
-                return;
-            }
-
-            // Reveal this safe cell
-            bool safe = cell.Reveal(); // must be true because we checked Live above
-            if (!safe)
-            {
-                return;
-            }
-
-            // If a reward is present, collect it and increment board count
-            if (cell.CollectReward())
-            {
-                RewardsRemaining++;
-                Console.WriteLine($"A reward was collected! Rewards now: {RewardsRemaining}");
-
-            }
-
-            // If this cell has a number on it, reveal it and STOP (boundary)
-            if (cell.LiveNeighbors > 0)
-            {
-                return;
-            }
-
-            // Otherwise, this is a zero-neighbor cell: recurse into all 8 neighbors
-            for (int dr = -1; dr <= 1; dr++)
-            {
-                for (int dc = -1; dc <= 1; dc++)
-                {
-                    // Skip self
-                    if (dr == 0 && dc == 0)
-                    {
-                        continue;
-                    } 
-                    int nr = row + dr;
-                    int nc = col + dc;
-                    FloodFill(nr, nc);
-=======
->>>>>>> c97476f1b853fd268211b902b659fa6d99f47293
-                }
-            }
-
-            // If (pathologically) there are no safe cells, force one by demoting a random bomb.
-            // This guarantees at least one reward can be placed.
-            if (safeCells.Count == 0)
-            {
-                int rr = random.Next(Size);
-                int cc = random.Next(Size);
-                Cells[rr, cc].Live = false;   
-                safeCells.Add((rr, cc));
-                
-            }
-
-            int totalCells = Size * Size;
-
-            // Target ≈ 2% of cells as rewards, but:
-            // - at least 1,
-            // - at most number of safe cells (can't place rewards on bombs).
-            int target = (int)Math.Round(totalCells * 0.02);
-            target = Math.Max(1, Math.Min(target, safeCells.Count));
-
-            // Shuffle safe cells and take the first 'target' positions
-            for (int i = safeCells.Count - 1; i > 0; i--)
-            {
-                int j = random.Next(i + 1);
-                (safeCells[i], safeCells[j]) = (safeCells[j], safeCells[i]);
-            }
-
-            for (int k = 0; k < target; k++)
-            {
-                var (r, c) = safeCells[k];
-                Cells[r, c].HasReward = true;
-            }
-        }
-
-
-
-<<<<<<< HEAD
-
-
-
-
-=======
-        /// <summary>
-        /// Determines the current game state by scanning all cells.
-        /// <list type="bullet">
-        ///  <item><description><b>Lost</b> if any bomb cell has been revealed.</description></item>
-        ///  <item><description><b>Won</b> when every cell is resolved:
-        ///  bombs are correctly flagged and all non-bomb cells are revealed.</description></item>
-        ///  <item><description><b>InProgress</b> otherwise (there is at least one unresolved cell).</description></item>
-        ///  </list>
-        /// </summary>
-        /// <returns>A <see cref="GameStatus"/> value indicating Lost, Won, or InProgress.</returns>
         public GameStatus DetermineGameState()
         {
-            bool anyUnresolved = false;
-
-            for (int r = 0; r < Size; r++)
-            {
-                for (int c = 0; c < Size; c++)
-                {
-                    var cell = Cells[r, c];
-
-                    // If a bomb was revealed, game is lost
-                    if (cell.Live && cell.IsRevealed)
-                        return GameStatus.Lost;
-
-                    // Track if there is still work to do:
-                    // - bombs must be correctly flagged
-                    // - safe cells must be revealed
-                    bool resolved =
-                        (cell.Live && cell.IsFlagged) ||
-                        (!cell.Live && cell.IsRevealed);
-
-                    if (!resolved)
-                        anyUnresolved = true;
-                }
-            }
-
-            return anyUnresolved ? GameStatus.InProgress : GameStatus.Won;
+            return GameStatus.InProgress;
         }
->>>>>>> c97476f1b853fd268211b902b659fa6d99f47293
-
     }
 }
