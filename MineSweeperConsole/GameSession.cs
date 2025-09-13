@@ -51,14 +51,13 @@ namespace MineSweeperConsole
             bool victory = false;
             bool death = false;
 
-            // Main turn loop: read input -> apply action -> check state -> re-render
+            // Main turn loop: read input → apply action → check state → re-render
             while (!victory && !death)
             {
                 int row = ReadInt($"\nEnter row (0..{board.Size - 1}): ", 0, board.Size - 1);
                 int col = ReadInt($"Enter col (0..{board.Size - 1}): ", 0, board.Size - 1);
 
                 var action = ReadAction("Choose action [V=Visit, F=Flag, R=Use Reward]: ");
-
                 var cell = board.Cells[row, col];
 
                 switch (action)
@@ -67,11 +66,10 @@ namespace MineSweeperConsole
                         {
                             lastRow = row; lastCol = col;
 
-                            var target = board.Cells[row, col];
-
-                            if (target.Live)
+                            // Bomb case: reveal first so mulligan can undo a real move
+                            if (cell.Live)
                             {
-                                // Bomb revealed — offer immediate mulligan BEFORE state is checked
+                                cell.Reveal();
                                 Console.WriteLine("You revealed a BOMB!");
 
                                 if (board.RewardsRemaining > 0)
@@ -94,25 +92,25 @@ namespace MineSweeperConsole
                                     Console.WriteLine($"Rewards remaining: {board.RewardsRemaining}");
                                     death = true;
                                 }
+
+                                break;
+                            }
+
+                            // Safe click:
+                            if (cell.LiveNeighbors == 0)
+                            {
+                                // Reveal the whole safe region (and collect any rewards inside it)
+                                board.FloodFill(row, col);
                             }
                             else
                             {
-                                // Safe click:
-                                if (target.LiveNeighbors == 0)
-                                {
-                                    // Reveal the whole safe region (and collect any rewards inside it)
-                                    board.FloodFill(row, col);
-                                }
-                                else
-                                {
-                                    // Single-cell reveal for numbered boundary
-                                    bool safe = target.Reveal();
+                                // Single-cell reveal for numbered boundary
+                                bool safe = cell.Reveal();
 
-                                    if (safe && target.CollectReward())
-                                    {
-                                        board.RewardsRemaining++;
-                                        Console.WriteLine($"You found a reward! Rewards now: {board.RewardsRemaining}");
-                                    }
+                                if (safe && cell.CollectReward())
+                                {
+                                    board.RewardsRemaining++;
+                                    Console.WriteLine($"You found a reward! Rewards now: {board.RewardsRemaining}");
                                 }
                             }
 
@@ -121,7 +119,8 @@ namespace MineSweeperConsole
 
                     case PlayerAction.Flag:
                         {
-                            cell.ToggleFlag();
+                            if (!cell.IsRevealed)
+                                cell.ToggleFlag();
                             break;
                         }
 
@@ -132,16 +131,20 @@ namespace MineSweeperConsole
                             {
                                 Console.WriteLine("You do not have any rewards to use.");
                                 Console.WriteLine($"Rewards remaining: {board.RewardsRemaining}");
-                                break; 
+                                break;
                             }
 
                             Console.WriteLine($"Rewards remaining: {board.RewardsRemaining}");
 
-                            // allow quick Enter to target last visited
-                            int rr = ReadInt($"Undo row (0..{board.Size - 1}) [Enter for last: {lastRow}]: ",
-                                             -1, board.Size - 1, allowBlank: true);
-                            int cc = ReadInt($"Undo col (0..{board.Size - 1}) [Enter for last: {lastCol}]: ",
-                                             -1, board.Size - 1, allowBlank: true);
+                            // Allow quick Enter to target last visited
+                            int rr = ReadInt(
+                                $"Undo row (0..{board.Size - 1}) [Enter for last: {lastRow}]: ",
+                                -1, board.Size - 1, allowBlank: true
+                            );
+                            int cc = ReadInt(
+                                $"Undo col (0..{board.Size - 1}) [Enter for last: {lastCol}]: ",
+                                -1, board.Size - 1, allowBlank: true
+                            );
                             if (rr == -1 && cc == -1 && lastRow >= 0 && lastCol >= 0)
                             {
                                 rr = lastRow; cc = lastCol;
@@ -150,9 +153,9 @@ namespace MineSweeperConsole
                             board.UseSpecialBonus(rr, cc); // this will decrement if successful
                             break;
                         }
-
                 }
 
+                // Check state and re-render after each action
                 var state = board.DetermineGameState();
                 victory = (state == Board.GameStatus.Won);
                 death = (state == Board.GameStatus.Lost);
@@ -164,6 +167,7 @@ namespace MineSweeperConsole
                 ? "\nVictory! You cleared the board."
                 : "\nGame Over! You hit a bomb.");
         }
+
 
 
         // ---------- Input helpers (UI concern) ----------

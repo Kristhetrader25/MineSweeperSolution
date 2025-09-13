@@ -16,7 +16,11 @@ namespace MineSweeperConsole
         /// <param name="args">Command-line arguments (not used).</param>
         static void Main(string[] args)
         {
+<<<<<<< HEAD
             var session = new GameSession(size: 10, difficulty: 0.10f);
+=======
+            var session = new GameSession(size: 3, difficulty: 0.10f);
+>>>>>>> c97476f1b853fd268211b902b659fa6d99f47293
 
             // Set to true during testing, false for real play
             session.Run(showAnswerKey: true);
