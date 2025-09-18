@@ -182,7 +182,7 @@ namespace MineSweeperGUI
         /// </summary>
         private Font GetFittingFont(Font baseFont, int cell)
         {
-            // Start with a conservative guess, then shrink until it fits.
+            // Start with a guess, then shrink until it fits.
             float size = Math.Max(7.0f, cell * 0.42f);
             using var g = pnlGameBoard.CreateGraphics();
 
@@ -409,16 +409,40 @@ namespace MineSweeperGUI
             // Ensure the latest state is visible.
             RefreshBoardUI();
 
-            var msg = lost
-                ? $"Game Over! You hit a bomb.\nTime: {elapsed} s"
-                : $"Victory! You cleared the board.\nTime: {elapsed} s";
+            // Loss path
+            if (lost)
+            {
+                var msg = $"Game Over! You hit a bomb.\nTime: {elapsed} s";
+                MessageBox.Show(msg, "Defeat", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                foreach (var b in buttons) b.Enabled = false;
+                return;
+            }
 
-            MessageBox.Show(msg,
-                            lost ? "Defeat" : "Victory",
-                            MessageBoxButtons.OK,
-                            lost ? MessageBoxIcon.Error : MessageBoxIcon.Information);
+            // Victory path 
+            label4.Text = $"{elapsed} s";  
 
-            // Disable all buttons to prevent further moves.
+            // 1) Ask for the winner's name
+            using (var win = new WinDialog(elapsed))
+            {
+                if (win.ShowDialog(this) == DialogResult.OK)
+                {
+                    string winner = win.WinnerName;
+
+                    // 2) Show the high scores window, passing name + score
+                    using (var scores = new Form4(winner, elapsed))
+                    {
+                        scores.ShowDialog(this);
+                    }
+                }
+                else
+                {
+                    // Player dismissed without entering name – can still show the board time
+                    MessageBox.Show($"Victory! Time: {elapsed} s",
+                                    "Victory", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+
+            // Disable further clicks after game ends
             foreach (var b in buttons) b.Enabled = false;
         }
 
