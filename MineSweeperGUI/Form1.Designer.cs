@@ -34,13 +34,18 @@
             lblScore = new Label();
             label4 = new Label();
             btnRestart = new Button();
+            menuStrip1 = new MenuStrip();
+            fileToolStripMenuItem = new ToolStripMenuItem();
+            mnuGameSave = new ToolStripMenuItem();
+            mnuGameLoad = new ToolStripMenuItem();
+            menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // pnlGameBoard
             // 
-            pnlGameBoard.Location = new Point(12, 40);
+            pnlGameBoard.Location = new Point(12, 62);
             pnlGameBoard.Name = "pnlGameBoard";
-            pnlGameBoard.Size = new Size(1648, 993);
+            pnlGameBoard.Size = new Size(1648, 971);
             pnlGameBoard.TabIndex = 0;
             // 
             // lblStartTime
@@ -89,6 +94,37 @@
             btnRestart.UseVisualStyleBackColor = true;
             btnRestart.Click += btnRestart_Click;
             // 
+            // menuStrip1
+            // 
+            menuStrip1.ImageScalingSize = new Size(32, 32);
+            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
+            menuStrip1.Location = new Point(0, 0);
+            menuStrip1.Name = "menuStrip1";
+            menuStrip1.Size = new Size(1915, 42);
+            menuStrip1.TabIndex = 6;
+            menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { mnuGameSave, mnuGameLoad });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new Size(71, 38);
+            fileToolStripMenuItem.Text = "File";
+            // 
+            // mnuGameSave
+            // 
+            mnuGameSave.Name = "mnuGameSave";
+            mnuGameSave.Size = new Size(359, 44);
+            mnuGameSave.Text = "Save";
+            mnuGameSave.Click += mnuGameSave_Click;
+            // 
+            // mnuGameLoad
+            // 
+            mnuGameLoad.Name = "mnuGameLoad";
+            mnuGameLoad.Size = new Size(359, 44);
+            mnuGameLoad.Text = "Load";
+            mnuGameLoad.Click += mnuGameLoad_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
@@ -100,8 +136,12 @@
             Controls.Add(label2);
             Controls.Add(lblStartTime);
             Controls.Add(pnlGameBoard);
+            Controls.Add(menuStrip1);
+            MainMenuStrip = menuStrip1;
             Name = "Form1";
             Text = "Form1";
+            menuStrip1.ResumeLayout(false);
+            menuStrip1.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -114,5 +154,9 @@
         private Label lblScore;
         private Label label4;
         private Button btnRestart;
+        private MenuStrip menuStrip1;
+        private ToolStripMenuItem fileToolStripMenuItem;
+        private ToolStripMenuItem mnuGameSave;
+        private ToolStripMenuItem mnuGameLoad;
     }
 }

@@ -51,6 +51,7 @@ namespace MineSweeperGUI
                 Date = DateTime.Now
             };
             AddWithId(gs);
+            RecomputeAggregates();
         }
 
         /// <summary>
@@ -82,6 +83,7 @@ namespace MineSweeperGUI
 
             // Attempt to auto-load existing scores silently on open.
             LoadFromDisk(silent: true);
+            RecomputeAggregates();
         }
 
         /// <summary>
@@ -91,6 +93,7 @@ namespace MineSweeperGUI
         {
             gs.Id = _stats.Count == 0 ? 1 : (_stats.Max(s => s.Id) + 1);
             _stats.Add(gs);
+            RecomputeAggregates();
         }
 
         /// <summary>
@@ -110,6 +113,10 @@ namespace MineSweeperGUI
                 s.Id = id++;
                 _stats.Add(s);
             }
+
+            // after repopulating _stats
+            RecomputeAggregates();
+
         }
 
         /// <summary>
@@ -160,6 +167,9 @@ namespace MineSweeperGUI
                     MessageBox.Show("Scores loaded.", "Load",
                                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
+
+                RecomputeAggregates();
+
             }
             catch (Exception ex)
             {
@@ -171,6 +181,38 @@ namespace MineSweeperGUI
                    
             }
         }
+
+        /// <summary>
+        /// Recomputes and displays aggregate stats (count, average/best/worst time).
+        /// Safe when the list is empty or when points are not tracked.
+        /// </summary>
+        private void RecomputeAggregates()
+        {
+            // Count of games.
+            int n = _stats.Count;
+            lblGames.Text = $"Games: {n}";
+
+            if (n == 0)
+            {
+                lblAvgTime.Text = "Avg Time: 0 s";
+                lblBestTime.Text = "Best Time: 0 s";
+                lblWorstTime.Text = "Worst Time: 0 s";
+                
+                return;
+            }
+
+            // Time aggregates.
+            var times = _stats.Select(s => s.Score).ToArray();
+            double avgSec = times.Average();
+            int best = times.Min();
+            int worst = times.Max();
+
+            lblAvgTime.Text = $"Avg Time: {Math.Round(avgSec, 1)} s";
+            lblBestTime.Text = $"Best Time: {best} s";
+            lblWorstTime.Text = $"Worst Time: {worst} s";
+            
+        }
+
     }
 }
 

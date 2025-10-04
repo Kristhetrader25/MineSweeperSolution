@@ -5,6 +5,7 @@ using System.Linq;
 using System.Drawing;
 using System.Threading.Tasks;
 
+
 namespace MineSweeperGUI
 {
     /// <summary>
@@ -14,7 +15,7 @@ namespace MineSweeperGUI
     /// </summary>
     public partial class Form1 : Form
     {
-        
+
 
         /// <summary> Image used for unrevealed tiles (stone texture).</summary>
         private Image imgTileHidden;
@@ -57,6 +58,10 @@ namespace MineSweeperGUI
         {
             board = new Board(size, difficulty);
             InitializeComponent();
+
+            mnuGameSave.Click += mnuGameSave_Click;
+            mnuGameLoad.Click += mnuGameLoad_Click;
+
 
             // Make the board area fill the center panel and re-layout on resize.
             pnlGameBoard.Dock = DockStyle.Fill;
@@ -281,7 +286,7 @@ namespace MineSweeperGUI
             var (r, c) = ((int, int))btn.Tag;
             var cell = board.Cells[r, c];
 
-            if (cell.IsRevealed) return;  
+            if (cell.IsRevealed) return;
             cell.ToggleFlag();
 
             UpdateCellButton(r, c);
@@ -419,7 +424,7 @@ namespace MineSweeperGUI
             }
 
             // Victory path 
-            label4.Text = $"{elapsed} s";  
+            label4.Text = $"{elapsed} s";
 
             // 1) Ask for the winner's name
             using (var win = new WinDialog(elapsed))
@@ -456,6 +461,59 @@ namespace MineSweeperGUI
             StartGameForm startForm = new StartGameForm();
             startForm.Show();
             this.Close();
+        }
+
+        // Save current board to a JSON file.
+        private void mnuGameSave_Click(object sender, EventArgs e)
+        {
+            using var sfd = new SaveFileDialog
+            {
+                Title = "Save Minesweeper Game",
+                Filter = "Minesweeper Save (*.msave)|*.msave|JSON (*.json)|*.json|All Files (*.*)|*.*",
+                FileName = "minesweeper.msave"
+            };
+            if (sfd.ShowDialog(this) != DialogResult.OK) return;
+
+            try
+            {
+                var json = BoardSerialization.ToJson(board);
+                File.WriteAllText(sfd.FileName, json);
+                MessageBox.Show("Game saved.", "Save", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Save failed:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+        // Load a board from a JSON file and re-render UI.
+        private void mnuGameLoad_Click(object sender, EventArgs e)
+        {
+            using var ofd = new OpenFileDialog
+            {
+                Title = "Load Minesweeper Game",
+                Filter = "Minesweeper Save (*.msave)|*.msave|JSON (*.json)|*.json|All Files (*.*)|*.*"
+            };
+            if (ofd.ShowDialog(this) != DialogResult.OK) return;
+
+            try
+            {
+                var json = File.ReadAllText(ofd.FileName);
+                board = BoardSerialization.FromJson(json);
+
+                // Rebuild the button grid based on possibly different size;
+                // This also re-wires click handlers.
+                RenderBoard();
+                RefreshBoardUI();
+
+                // Show saved start time again.
+                label2.Text = board.StartTime.ToString("g");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Load failed:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

@@ -39,8 +39,14 @@
             mnuSortByDate = new ToolStripMenuItem();
             dgvScores = new DataGridView();
             btnOK = new Button();
+            pnlStats = new Panel();
+            lblWorstTime = new Label();
+            lblBestTime = new Label();
+            lblAvgTime = new Label();
+            lblGames = new Label();
             menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvScores).BeginInit();
+            pnlStats.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
@@ -49,7 +55,7 @@
             menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, sortToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(961, 40);
+            menuStrip1.Size = new Size(1020, 40);
             menuStrip1.TabIndex = 0;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -121,11 +127,60 @@
             btnOK.Text = "OK";
             btnOK.UseVisualStyleBackColor = true;
             // 
+            // pnlStats
+            // 
+            pnlStats.Controls.Add(lblWorstTime);
+            pnlStats.Controls.Add(lblBestTime);
+            pnlStats.Controls.Add(lblAvgTime);
+            pnlStats.Controls.Add(lblGames);
+            pnlStats.Dock = DockStyle.Bottom;
+            pnlStats.Location = new Point(0, 681);
+            pnlStats.Name = "pnlStats";
+            pnlStats.Size = new Size(1020, 200);
+            pnlStats.TabIndex = 3;
+            // 
+            // lblWorstTime
+            // 
+            lblWorstTime.AutoSize = true;
+            lblWorstTime.Location = new Point(257, 90);
+            lblWorstTime.Name = "lblWorstTime";
+            lblWorstTime.Size = new Size(177, 32);
+            lblWorstTime.TabIndex = 3;
+            lblWorstTime.Text = "Worst Time: 0 s";
+            // 
+            // lblBestTime
+            // 
+            lblBestTime.AutoSize = true;
+            lblBestTime.Location = new Point(257, 16);
+            lblBestTime.Name = "lblBestTime";
+            lblBestTime.Size = new Size(161, 32);
+            lblBestTime.TabIndex = 2;
+            lblBestTime.Text = "Best Time: 0 s";
+            // 
+            // lblAvgTime
+            // 
+            lblAvgTime.AutoSize = true;
+            lblAvgTime.Location = new Point(27, 90);
+            lblAvgTime.Name = "lblAvgTime";
+            lblAvgTime.Size = new Size(157, 32);
+            lblAvgTime.TabIndex = 1;
+            lblAvgTime.Text = "Avg Time: 0 s";
+            // 
+            // lblGames
+            // 
+            lblGames.AutoSize = true;
+            lblGames.Location = new Point(27, 16);
+            lblGames.Name = "lblGames";
+            lblGames.Size = new Size(111, 32);
+            lblGames.TabIndex = 0;
+            lblGames.Text = "Games: 0";
+            // 
             // Form4
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(961, 692);
+            ClientSize = new Size(1020, 881);
+            Controls.Add(pnlStats);
             Controls.Add(btnOK);
             Controls.Add(dgvScores);
             Controls.Add(menuStrip1);
@@ -135,6 +190,8 @@
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvScores).EndInit();
+            pnlStats.ResumeLayout(false);
+            pnlStats.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -152,5 +209,10 @@
         private ToolStripMenuItem mnuSortByName;
         private ToolStripMenuItem mnuSortByScore;
         private ToolStripMenuItem mnuSortByDate;
+        private Panel pnlStats;
+        private Label lblWorstTime;
+        private Label lblBestTime;
+        private Label lblAvgTime;
+        private Label lblGames;
     }
 }

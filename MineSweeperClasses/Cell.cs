@@ -131,5 +131,21 @@ namespace MineSweeperClasses
         /// Returns the string form of the cell, which matches its visible character.
         /// </summary>
         public override string ToString() => GetVisibleChar().ToString();
+
+
+        /// <summary>
+        /// Sets the full state without triggering side effects (used by load/resume).
+        /// </summary>
+        public void SetState(bool live, int liveNeighbors, bool hasReward, bool isRevealed, bool isFlagged)
+        {
+            Live = live;
+            LiveNeighbors = liveNeighbors;
+            HasReward = hasReward;
+
+            // Directly set reveal/flag states to avoid reward collection or loss triggers.
+            IsRevealed = isRevealed;
+            IsFlagged = isFlagged;
+        }
+
     }
 }
